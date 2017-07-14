@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if
+
+g++ -Wall -I$HOME/hackrf/host/libhackrf/src/ -L$HOME/hackrf/host/build/libhackrf/src -o rx_samps rx_samps.cpp -lhackrf 
+
+
+#g++ -Wall -o rx_samps rx_samps.cpp
