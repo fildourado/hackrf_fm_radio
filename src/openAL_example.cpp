@@ -8,6 +8,14 @@
 
 #include <stdint.h>
 
+#include <math.h>
+#include <cmath>
+
+//#include <iostream>
+#include <fstream>
+
+#define PI 3.14159265
+
 void
 list_audio_devices(const ALCchar *devices)
 {
@@ -142,53 +150,54 @@ int main(int argc, char ** argv)
     }
   
   uint16_t bits_per_sample = 16;
-  ALenum format = AL_FORMAT_MONO16;
+  ALenum format = AL_FORMAT_MONO8;
   char * data;
-  ALsizei size = 32000;
-  ALsizei freq = 16000;
+  ALsizei size = 32000; // number of bytes
+  ALsizei fs = 16000;
   ALboolean loop = AL_FALSE;
  
-  //char buf[size];
+  char buf[size];
+
+  double _freq = 1e3;
+  double _amp = std::pow(2,bits_per_sample-1) - 1;
+  double _offset = _amp;
+  uint16_t _y = 0;
+
+  
+  std::ofstream outfile;
+  outfile.open ("out.txt");
+
+  double f = 1000.0;
+
+  int j = 0;
+
+  for( uint32_t i = 0; i < size/sizeof(uint16_t); i++ )
+    {
+      _y = (uint16_t)( ( _amp * ( sin( 2.0 * PI * f *( (double)i / (double)fs ) ) ) ) + _offset );
+      
+      outfile << _y << "\n";
+
+      //buf[j] = 100;
+      //buf[j+1] = 100;
+      buf[j] =   (uint8_t) ( _y & 0x00FF );
+      buf[j+1] = (uint8_t) ( _y >> 8 );
+
+      j+=2;
+      
+    }
+
+  outfile.close();
+  data = &buf[0];
   
   //Now we can finally proceed with loading the raw audio stream into
   //our buffer, this is done like this for alut:
-  //alBufferData(buffer, format, data, size, freq);
+  alBufferData(buffer, format, data, size, fs);
   // check for errors
-  //error = alGetError();
-  //if (error != AL_NO_ERROR)
-    // {
-    //std::cout << "load raw audio stream into buffer: " << error << std::endl;
-    // }
-
-  // Load test.wav
-  //loadWAVFile("test.wav", &format, data, &size, &freq, &loop);
-
-  /*
-  if ((error = alGetError()) != AL_NO_ERROR)
+  error = alGetError();
+  if (error != AL_NO_ERROR)
     {
-      DisplayALError("alutLoadWAVFile test.wav : ", error);
-      alDeleteBuffers(NUM_BUFFERS, g_Buffers);
-      return;
+      std::cout << "load raw audio stream into buffer: " << error << std::endl;
     }
-
-  // Copy test.wav data into AL Buffer 0
-  alBufferData(g_Buffers[0],format,data,size,freq);
-  if ((error = alGetError()) != AL_NO_ERROR)
-    {
-      DisplayALError("alBufferData buffer 0 : ", error);
-      alDeleteBuffers(NUM_BUFFERS, g_Buffers);
-      return;
-    }
-
-  // Unload test.wav
-  unloadWAV(format,data,size,freq);
-  if ((error = alGetError()) != AL_NO_ERROR)
-    {
-      DisplayALError("alutUnloadWAV : ", error);
-      alDeleteBuffers(NUM_BUFFERS, g_Buffers);
-      return;
-    }
-  */
   
   ///////////////////////
   // Bind Buffer to Source
@@ -202,6 +211,8 @@ int main(int argc, char ** argv)
     }
   
   alSourcePlay(source);
+  std::cout<<"Playing!"<<std::endl;
+  
   // check for errors
   error = alGetError();
   if (error != AL_NO_ERROR)
