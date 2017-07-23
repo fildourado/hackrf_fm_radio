@@ -199,7 +199,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>107950000</value>
+      <value>108150000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -227,7 +227,7 @@
     </param>
     <param>
       <key>max</key>
-      <value>108000000</value>
+      <value>109000000</value>
     </param>
     <param>
       <key>min</key>
@@ -1866,7 +1866,7 @@
     </param>
     <param>
       <key>sample_rate</key>
-      <value>10e6</value>
+      <value>4e6</value>
     </param>
     <param>
       <key>sync</key>
@@ -1905,7 +1905,7 @@
     </param>
     <param>
       <key>fft_size</key>
-      <value>512</value>
+      <value>1024</value>
     </param>
     <param>
       <key>freqvar</key>
@@ -1949,7 +1949,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>100000</value>
+      <value>4e6</value>
     </param>
     <param>
       <key>title</key>

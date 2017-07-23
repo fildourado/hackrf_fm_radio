@@ -23,13 +23,13 @@ def main():
 
     filepath = path+filename
 
-    fs = 10e6 # samples/sec
-    fc = 107950000.0 # center frequency
+    fs = 4e6 # samples/sec
+    fc = 108150000.0 # center frequency
 
 
     #N = 2**22 # number of samples to collect
     #N = 2**21 # number of samples to collect
-    N = 2**16 # FFT window chunk
+    N = 2**10 # FFT window chunk
     N_buffers = 1000
 
     x = np.zeros(N) + 1j*np.zeros(N)
@@ -100,19 +100,19 @@ def main():
 
     peak_hold = np.zeros(N) - 1.0
     avg = np.zeros(N)
-    #data = np.array([])
+    data = np.array([])
 
     for i in range(N_buffers):
 
-        y = signal.lfilter(b, a, signal_buffer[i])
-
+        #y = signal.lfilter(b, a, signal_buffer[i])
+        y = signal_buffer[i]
         yf = fft(y)
         yf = fftshift(yf)
         yf = np.abs(yf)
         temp = yf.copy()
         peak_hold = np.maximum(peak_hold, temp)
         avg = avg + (yf)
-        #data = np.concatenate((data,y))
+        data = np.concatenate((data,y))
 
     avg = avg * (1.0/N_buffers)
 
@@ -121,18 +121,18 @@ def main():
     plt.plot(xf, 10 * np.log10( (1.0 / N) * avg), 'r--', label="Average" )
     #plt.plot(xf, (1.0 / N) * peak_hold, 'b', label="Peak Hold" )
     #plt.plot(xf, (1.0 / N) * avg, 'r--', label="Average" )
-    plt.xlim([107.9, 108.0])
+    #plt.xlim([107.9, 108.0])
     plt.legend()
     plt.grid()
 
-    plt.figure(2)
-    data = np.concatenate((signal_buffer[0],signal_buffer[100]))
-    f, t, Sxx = signal.spectrogram(data, fs)
+    #plt.figure(2)
+    #data = np.concatenate((signal_buffer[0],signal_buffer[100]))
+    #f, t, Sxx = signal.spectrogram(data, fs)
 
-    f = (f + fc)/1e6
-    plt.pcolormesh(t, f, Sxx)
-    plt.ylabel('Frequency [Hz]')
-    plt.xlabel('Time [sec]')
+    #f = (f + fc)/1e6
+    #plt.pcolormesh(t, f, Sxx)
+    #plt.ylabel('Frequency [Hz]')
+    #plt.xlabel('Time [sec]')
     plt.show()
 
     sys.exit()
